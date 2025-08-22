@@ -1,0 +1,45 @@
+# Centralized configuration for order-service in the 'prod' environment
+# Configures the service to use a PostgreSQL database for production.
+
+spring:
+  # Configures the connection to the production database using environment variables for secrets.
+  datasource:
+    url: jdbc:postgresql://prod-db.internal:5432/fabrikka_order # Example production database URL
+    username: ${DB_USER} # Production database username
+    password: ${DB_PASS} # Production database password
+    driver-class-name: org.postgresql.Driver
+
+  # Configures JPA and Hibernate for production.
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate # Validates the schema against entities, but does not make changes. Safer for production.
+    show-sql: false
+
+eureka:
+  # Configures how this service interacts with the Eureka discovery server.
+  client:
+    service-url:
+      # In a real production environment, this would point to a highly available Eureka cluster.
+      defaultZone: http://discovery-server:8761/eureka/
+
+management:
+  # Configures actuator endpoints for monitoring and management.
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+  endpoint:
+    # Disables the remote shutdown endpoint, which is a critical security measure.
+    shutdown:
+      enabled: false # Always false in production.
+  metrics:
+    # Adds the application name as a default tag to all metrics for better filtering.
+    tags:
+      application: ${spring.application.name}
+
+# Set more conservative logging levels for production to reduce noise.
+logging:
+  # Reduces log verbosity for production environments.
+  level:
+    com.fabrikka.order_service: INFO

@@ -1,0 +1,68 @@
+# Centralized configuration for notification-service in the 'prod' environment
+# Configures the service for production with PostgreSQL, RabbitMQ, and a production mail server.
+
+spring:
+  # Configures the connection to the production RabbitMQ message broker.
+  rabbitmq:
+    host: prod-rabbitmq.internal # Example production hostname
+    port: 5672
+    username: ${SPRING_RABBITMQ_USERNAME}
+    password: ${SPRING_RABBITMQ_PASSWORD}
+  # Configures the connection to the production database.
+  datasource:
+    url: jdbc:postgresql://prod-db.internal:5432/fabrikka_notify
+    username: ${DB_USER} # Different secret for prod
+    password: ${DB_PASS}
+    driver-class-name: org.postgresql.Driver
+  # Configures JPA and Hibernate for production.
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate # Validates the schema against entities, but does not make changes. Safer for production.
+    show-sql: false
+  # Configures the JavaMailSender for sending emails in production.
+  mail:
+    # Production mail settings would go here
+    host: smtp.prod-mail-provider.com
+    username: prod-user@example.com
+    password: ${PROD_MAIL_PASSWORD}
+  # Configures Spring Cloud Stream for message-driven communication.
+  cloud:
+    function:
+      # Defines the functions that are exposed as message consumers.
+      definition: sendNotificationGeneric;sendNotification
+    stream:
+      # Binds the functions to specific RabbitMQ destinations (queues/topics).
+      bindings:
+        sendNotificationGeneric-in-0:
+          destination: send-communication-generic
+          group: ${spring.application.name}
+        sendNotification-in-0:
+          destination: send-communication
+          group: ${spring.application.name}
+
+eureka:
+  # Configures how this service interacts with the Eureka discovery server.
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/
+
+management:
+  # Configures actuator endpoints for monitoring and management.
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+  endpoint:
+    # Disables the remote shutdown endpoint, which is a critical security measure.
+    shutdown:
+      enabled: false
+  metrics:
+    # Adds the application name as a default tag to all metrics for better filtering.
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  # Reduces log verbosity for production environments.
+  level:
+    com.notification.notificationService: INFO

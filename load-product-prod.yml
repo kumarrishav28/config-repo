@@ -1,0 +1,51 @@
+# Centralized configuration for load-product in the 'prod' environment
+# Configures the batch service for a production environment with a PostgreSQL database.
+
+spring:
+  # Configures the connection to the production database for batch job metadata.
+  datasource:
+    url: jdbc:postgresql://prod-db.internal:5432/fabrikka_batch # Example production database URL
+    username: ${DB_USER} # Production database username
+    password: ${DB_PASS} # Production database password
+    driver-class-name: org.postgresql.Driver
+  # Configures JPA and Hibernate for production.
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate # Validates the schema against entities, but does not make changes. Safer for production.
+    show-sql: false
+  # Controls database initialization with scripts like schema.sql.
+  sql:
+    init:
+      mode: never # Do not run schema.sql in production
+  # Configures the connection to the RabbitMQ message broker.
+  rabbitmq:
+    host: prod-rabbitmq.internal
+    username: ${SPRING_RABBITMQ_USERNAME}
+    password: ${SPRING_RABBITMQ_PASSWORD}
+
+eureka:
+  # Configures how this service interacts with the Eureka discovery server.
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/
+
+management:
+  # Configures actuator endpoints for monitoring and management.
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+  endpoint:
+    # Disables the remote shutdown endpoint, which is a critical security measure.
+    shutdown:
+      enabled: false
+  metrics:
+    # Adds the application name as a default tag to all metrics for better filtering.
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  # Reduces log verbosity for production environments.
+  level:
+    com.Fabrikka.loadProduct: INFO

@@ -1,0 +1,44 @@
+# Centralized configuration for product-service in the 'local' environment
+# Configures the service for local development, connecting to other services via localhost.
+
+spring:
+  # Configures the connection to the development database.
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: sa
+  # Configures JPA and Hibernate for development.
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update # Automatically creates/updates the database schema on startup.
+    show-sql: true
+  # Enables the H2 database web console for debugging.
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true # Allows access to the console from other machines.
+
+eureka:
+  # Configures how this service interacts with the Eureka discovery server.
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/ # Use localhost for local development and debugging.
+
+management:
+  # Configures actuator endpoints for monitoring and management.
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+  endpoint:
+    # Disables the remote shutdown endpoint, which is a critical security measure.
+    shutdown:
+      enabled: false
+  metrics:
+    # Adds the application name as a default tag to all metrics for better filtering.
+    tags:
+      application: ${spring.application.name}

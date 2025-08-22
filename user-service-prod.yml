@@ -1,0 +1,48 @@
+# Centralized configuration for user-service in the 'prod' environment
+# Configures the service for production with PostgreSQL and RabbitMQ.
+
+spring:
+  # Configures the connection to the production database using environment variables for secrets.
+  datasource:
+    url: jdbc:postgresql://prod-db.internal:5432/fabrikka_user # Example production database URL
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    driver-class-name: org.postgresql.Driver
+  # Configures JPA and Hibernate for production.
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate # Validates the schema against entities, but does not make changes. Safer for production.
+    show-sql: false
+  # Configures the connection to the production RabbitMQ message broker.
+  rabbitmq:
+    host: prod-rabbitmq.internal
+    username: ${SPRING_RABBITMQ_USERNAME}
+    password: ${SPRING_RABBITMQ_PASSWORD}
+
+eureka:
+  # Configures how this service interacts with the Eureka discovery server.
+  client:
+    service-url:
+      # In a real production environment, this would point to a highly available Eureka cluster.
+      defaultZone: http://discovery-server:8761/eureka/
+
+management:
+  # Configures actuator endpoints for monitoring and management.
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+  endpoint:
+    # Disables the remote shutdown endpoint, which is a critical security measure.
+    shutdown:
+      enabled: false # Always false in production.
+  metrics:
+    # Adds the application name as a default tag to all metrics for better filtering.
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  # Reduces log verbosity for production environments.
+  level:
+    com.userservice.user: INFO

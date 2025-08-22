@@ -1,0 +1,73 @@
+# Centralized configuration for api-gateway in the 'prod' environment
+# Defines all service routes and production-grade settings like timeouts and logging.
+
+spring:
+  cloud:
+    gateway:
+      # Sets a global response timeout to prevent requests from hanging indefinitely.
+      httpclient:
+        response-timeout: 15s
+      # Defines the routing rules for incoming requests to downstream services.
+      routes:
+        - id: notification-service
+          uri: lb://notification-service # The 'lb://' prefix enables client-side load balancing with Eureka.
+          predicates:
+            - Path=/sendEmail/**
+
+        - id: cart-service
+          uri: lb://cart-service
+          predicates:
+            - Path=/carts/**
+
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/products/**
+
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path=/inventory/**
+
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/orders/**
+
+        - id: load-product
+          uri: lb://load-product
+          predicates:
+            - Path=/productFile/**
+
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user/**
+
+eureka:
+  # Configures how this service interacts with the Eureka discovery server.
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/
+
+management:
+  # Configures actuator endpoints for monitoring and management.
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus,gateway"
+  endpoint:
+    # Disables the remote shutdown endpoint, which is a critical security measure.
+    shutdown:
+      enabled: false
+  metrics:
+    # Adds the application name as a default tag to all metrics for better filtering.
+    tags:
+      application: ${spring.application.name}
+
+# Set more conservative logging levels for production to reduce noise.
+logging:
+  # Reduces log verbosity for production environments.
+  level:
+    org.springframework.cloud.gateway: INFO
+    com.fabrikka.api_gateway: INFO
