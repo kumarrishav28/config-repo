@@ -23,6 +23,9 @@ eureka:
       # In a real production environment, this would point to a highly available Eureka cluster.
       # Example: http://eureka-prod-1:8761/eureka/,http://eureka-prod-2:8761/eureka/
       defaultZone: http://discovery-server:8761/eureka/
+    enabled: true
+    fetchRegistry: true
+    registerWithEureka: true
 
 management:
   # Configures actuator endpoints for monitoring and management.

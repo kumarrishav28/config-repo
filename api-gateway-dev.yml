@@ -44,6 +44,9 @@ spring:
 eureka:
   # Configures how this service interacts with the Eureka discovery server.
   client:
+    enabled: true
+    fetchRegistry: true
+    registerWithEureka: true
     service-url:
       defaultZone: http://discovery-server:8761/eureka/ # Use the service name for inter-container communication.
 

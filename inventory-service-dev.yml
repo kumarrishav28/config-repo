@@ -29,6 +29,10 @@ eureka:
   client:
     service-url:
       defaultZone: http://discovery-server:8761/eureka/ # Use the service name for inter-container communication.
+    enabled: true
+    fetchRegistry: true
+    registerWithEureka: true
+
 
 management:
   # Configures actuator endpoints for monitoring and management.

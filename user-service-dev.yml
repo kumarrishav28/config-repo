@@ -41,6 +41,9 @@ eureka:
   client:
     service-url:
       defaultZone: http://discovery-server:8761/eureka/
+    enabled: true
+    fetchRegistry: true
+    registerWithEureka: true
 
 management:
   # Configures actuator endpoints for monitoring and management.

@@ -29,6 +29,11 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/ # Use localhost for local development and debugging.
+    enabled: true
+    fetchRegistry: true
+    registerWithEureka: true
+  instance:
+    hostname: localhost
 
 management:
   # Configures actuator endpoints for monitoring and management.
