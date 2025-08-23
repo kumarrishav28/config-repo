@@ -32,9 +32,10 @@ eureka:
     registerWithEureka: true
   instance:
     hostname: localhost
-    prefer-ip-address: true
-    ip-address: 127.0.0.1
-
+    # Explicitly set the instance-id to override the default hostname resolution.
+    # This prevents Spring Cloud from picking up 'host.docker.internal' from the environment if docker desktop is running
+    # and ensures it registers with 'localhost' as you intend.
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
 
 management:
   # Configures actuator endpoints for monitoring and management.
