@@ -34,7 +34,8 @@ eureka:
     registerWithEureka: true
   instance:
     hostname: localhost
-
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
 
 management:
   # Configures actuator endpoints for monitoring and management.
