@@ -38,6 +38,11 @@ eureka:
     # This prevents Spring Cloud from picking up 'host.docker.internal' from the environment if docker desktop is running
     # and ensures it registers with 'localhost' as you intend.
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
+    prefer-ip-address: true
+    metadata-map:
+      # These tags tell Prometheus to scrape this service.
+      prometheus.io/scrape: 'true'
+      prometheus.io/path: '/actuator/prometheus'
 
 management:
   # Configures actuator endpoints for monitoring and management.

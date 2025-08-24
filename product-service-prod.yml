@@ -17,6 +17,13 @@ spring:
 
 eureka:
   # Configures how this service interacts with the Eureka discovery server.
+  instance:
+    # This is crucial for Prometheus to get the container's internal IP inside Docker
+    prefer-ip-address: true
+    metadata-map:
+      # These tags tell Prometheus to scrape this service.
+      prometheus.io/scrape: 'true'
+      prometheus.io/path: '/actuator/prometheus'
   client:
     service-url:
       # In a real production environment, this would point to a highly available Eureka cluster.

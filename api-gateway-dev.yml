@@ -43,12 +43,20 @@ spring:
 
 eureka:
   # Configures how this service interacts with the Eureka discovery server.
+  instance:
+    # This is crucial for Prometheus to get the container's internal IP inside Docker
+    prefer-ip-address: true
+    metadata-map:
+      # These tags tell Prometheus to scrape this service.
+      prometheus.io/scrape: 'true'
+      prometheus.io/path: '/actuator/prometheus'
   client:
     enabled: true
     fetchRegistry: true
     registerWithEureka: true
     service-url:
       defaultZone: http://discovery-server:8761/eureka/ # Use the service name for inter-container communication.
+
 
 management:
   # Configures actuator endpoints for monitoring and management.
